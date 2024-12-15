@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/rashmod/rssagg/internal/auth"
 	"github.com/rashmod/rssagg/internal/database"
 )
 
@@ -40,18 +39,6 @@ func (apiConfig *apiConfig) handleCreateUser(w http.ResponseWriter, r *http.Requ
 	respondWithJSON(w, http.StatusCreated, databaseUserToUser(user))
 }
 
-func (apiConfig *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetApiKey(r.Header)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, err.Error())
-		return
-	}
-
-	user, err := apiConfig.DB.GetUserByApiKey(r.Context(), apiKey)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Error getting user: %v", err))
-		return
-	}
-
+func (apiConfig *apiConfig) handleGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, http.StatusOK, databaseUserToUser(user))
 }
